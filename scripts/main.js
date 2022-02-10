@@ -6,6 +6,7 @@ let y = canvas.height / 2;
 
 let dy = 1;
 let dx = -1;
+let obstdy = 0;
 
 let ballRadius = 7;
 
@@ -30,6 +31,13 @@ for (let r = 0; r < obstColCount; r++) {
 }
 
 let score = 0;
+let level = 3;
+
+let topLowerBarrier = 0;
+let topUpperBarrier = 0;
+let botLowerBarrier = canvas.height/2 + obstGap;
+let botUpperBarrier = canvas.height/2 - obstGap;
+let specialObstY = 0;
 
 function shuffle(array) {
     let currentIndex = array.length, randomIndex;
@@ -85,6 +93,38 @@ function drawObsts() {
     }
 }
 
+function drawMovingObst() {
+    for (let r = 0; r < obstColCount; r++) {
+        a = pls[r];
+        if (topObsts[r].show == true) { //makes top obstacles
+            let obstX = (r * (obstWidth + obstPadding)) + obstOffsetLeft;
+            let obstY = 0;
+            topObsts[r].x = obstX;
+            topObsts[r].y = obstY;
+
+            ctx.beginPath();
+            ctx.rect(obstX, obstY, obstWidth, obstHeight + a + obstdy);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        if (bottomObsts[r].show == true) { //makes top obstacles
+            let obstX = (r * (obstWidth + obstPadding)) + obstOffsetLeft;
+            specialObstY = obstHeight + obstGap + a + obstdy;
+            bottomObsts[r].x = obstX;
+            bottomObsts[r].y = specialObstY;
+
+            ctx.beginPath();
+            ctx.rect(obstX, specialObstY, obstWidth, obstHeight + a + obstdy);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+}
+
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); //clear canvas
 
@@ -93,7 +133,7 @@ function draw() {
     drawBall(); //draws the ball
 
     y += dy; //change y value of ball
-    obstOffsetLeft += dx; //makes obstacles move
+  //  obstOffsetLeft += dx; //makes obstacles move
 
     //ceiling and floor check
     if (y + dy < ballRadius || y + dy > canvas.height - ballRadius) {
@@ -105,53 +145,64 @@ function draw() {
     collisionDetection(); //checks if collided with obstacles
 
     drawScore();
+
+    if (score == 8) {
+        alert("YOU PASSED LEVEL" + level);
+        document.location.reload();
+        clearInterval(interval);
+    }
+    
+    if (level == 3) {
+        if (specialObstY < botUpperBarrier) {
+            obstdy++;
+        }
+        if (specialObstY > botLowerBarrier) {
+            obstdy--;
+        }
+        drawMovingObst();
+    }
+
 }
 
-function collisionDetection() {
-    for (let r = 0; r < obstColCount; r++) {
-        a = pls[r];
-        let t = topObsts[r];
-        if (t.show == true) { //checks if collided with top obstacles
-            if (x > t.x && x < t.x + obstWidth && y < obstHeight + a) {
-                alert("GAME OVER");
-                document.location.reload();
-                clearInterval(interval);
+    function collisionDetection() {
+        for (let r = 0; r < obstColCount; r++) {
+            a = pls[r];
+            let t = topObsts[r];
+            if (t.show == true) { //checks if collided with top obstacles
+                if (x > t.x && x < t.x + obstWidth && y < obstHeight + a) {
+                    alert("GAME OVER");
+                    document.location.reload();
+                    clearInterval(interval);
+                }
+            }
+            let b = bottomObsts[r];
+            if (b.show == true) { //checks for bottom obstacles
+                if (x > b.x && x < b.x + obstWidth && y > b.y) {
+                    alert("GAME OVER");
+                    document.location.reload();
+                    clearInterval(interval);
+                }
+            }
+            if (x > t.x + obstWidth && x < t.x + obstWidth + 2) {
+                score++;
             }
         }
-        let b = bottomObsts[r];
-        if (b.show == true) { //checks for bottom obstacles
-            if (x > b.x && x < b.x + obstWidth && y > b.y) {
-                alert("GAME OVER");
-                document.location.reload();
-                clearInterval(interval);
-            }
-        }
-        if (x > t.x + obstWidth && x < t.x + obstWidth + 2) {
-            score++;
-        }
-        if (score == 8) {
-            alert("YOU WIN, CONGRATULATIONS!");
-            document.location.reload();
-            clearInterval(interval);
+    }
+
+    function drawScore() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText("Score: " + score, 8, 20);
+    }
+
+    function mouseDownHandler() { //makes ball go up when mouseclick
+        dy = -1; //goes up until hits barrier, then goes down
+        let barrier = y - 30;
+        if (y = barrier) {
+            dy = 1;
         }
     }
-}
 
+    document.addEventListener("mousedown", mouseDownHandler, false);
 
-function drawScore() {
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "#0095DD";
-    ctx.fillText("Score: " + score, 8, 20);
-}
-
-function mouseDownHandler() { //makes ball go up when mouseclick
-    dy = -1; //goes up until hits barrier, then goes down
-    let barrier = y - 30;
-    if (y = barrier) {
-        dy = 1;
-    }
-}
-
-document.addEventListener("mousedown", mouseDownHandler, false);
-
-let interval = setInterval(draw, 10);
+    let interval = setInterval(draw, 10);
