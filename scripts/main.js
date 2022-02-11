@@ -52,7 +52,7 @@ function shuffle(array) {
 function drawBall() { //makes ball
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "#0095DD";
+    ctx.fillStyle = "#cd5e77";
     ctx.fill();
     ctx.closePath();
 }
@@ -68,7 +68,7 @@ function drawObsts() {
 
             ctx.beginPath();
             ctx.rect(obstX, obstY, obstWidth, obstHeight + a);
-            ctx.fillStyle = "#0095DD";
+            ctx.fillStyle = "#8fdddf";
             ctx.fill();
             ctx.closePath();
         }
@@ -81,7 +81,7 @@ function drawObsts() {
 
             ctx.beginPath();
             ctx.rect(obstX, obstY, obstWidth, obstHeight + a);
-            ctx.fillStyle = "#0095DD";
+            ctx.fillStyle = "#8fdddf";
             ctx.fill();
             ctx.closePath();
         }
@@ -135,7 +135,7 @@ function collisionDetection() {
         a = pls[r];
         let t = topObsts[r];
         if (t.show == true) { //checks if collided with top obstacles
-            if (x > t.x && x < t.x + obstWidth && y < obstHeight + a) {
+            if (x + ballRadius > t.x && x + ballRadius< t.x + obstWidth && y + ballRadius < obstHeight + a) {
                 alert("GAME OVER");
                 document.location.reload();
                 clearInterval(interval);
@@ -143,7 +143,7 @@ function collisionDetection() {
         }
         let b = bottomObsts[r];
         if (b.show == true) { //checks for bottom obstacles
-            if (x > b.x && x < b.x + obstWidth && y > b.y) {
+            if (x + ballRadius> b.x && x + ballRadius < b.x + obstWidth && y + ballRadius > b.y) {
                 alert("GAME OVER");
                 document.location.reload();
                 clearInterval(interval);
@@ -157,13 +157,13 @@ function collisionDetection() {
 
     function drawScore() {
         ctx.font = "16px Arial";
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = "#000000";
         ctx.fillText("Score: " + score, 8, 20);
     }
 
     function drawLevel() {
         ctx.font = "16px Arial";
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = "#000000";
         ctx.fillText("Level: " + level, 120, 20);
     }
 
