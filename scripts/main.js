@@ -4,7 +4,8 @@ let ctx = canvas.getContext("2d");
 let x = canvas.width / 4;
 let y = canvas.height / 2;
 
-let dy = 1;
+let dy = 1;;
+let obstdy = 1;
 let dx = -1;
 
 let ballRadius = 7;
@@ -13,11 +14,12 @@ let obstWidth = 40;
 let obstHeight = (canvas.height - 70) / 2;
 let obstPadding = 80;
 let obstGap = 70;
-let obstColCount = 20;
+let obstColCount = 24;
 let obstOffsetLeft = canvas.width / 2;
 
-var obstChange = [10, 20, 30, 40, 50, 60, 70, 80];
+var obstChange = [10, 10, 10, 20, 20, 20, 30, 30, 30, 40, 40, 40, 50, 50, 50, 60, 60, 60, 70, 70, 70, 80, 80, 80];
 var pls = shuffle(obstChange); //generates array where obstChange contents are shuffled
+
 
 let topObsts = [];
 for (let r = 0; r < obstColCount; r++) {
@@ -30,6 +32,7 @@ for (let r = 0; r < obstColCount; r++) {
 }
 
 let score = 0;
+let level = 1;
 
 function shuffle(array) {
     let currentIndex = array.length, randomIndex;
@@ -85,11 +88,12 @@ function drawObsts() {
     }
 }
 
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); //clear canvas
 
     drawObsts(); //draws obstacles
-
+       
     drawBall(); //draws the ball
 
     y += dy; //change y value of ball
@@ -105,6 +109,25 @@ function draw() {
     collisionDetection(); //checks if collided with obstacles
 
     drawScore();
+
+    drawLevel();
+
+    if (score > 8 && score < 16) {
+        dx = -1.5;
+        level = 2;
+    }
+
+    if (score > 16 && score < 24) {
+        dx = -1.8;
+        level = 3;
+    }
+
+    if (score == 24) {
+        alert("CONGRATS, YOU WON!");
+        document.location.reload();
+        clearInterval(interval);
+    }
+
 }
 
 function collisionDetection() {
@@ -129,29 +152,29 @@ function collisionDetection() {
         if (x > t.x + obstWidth && x < t.x + obstWidth + 2) {
             score++;
         }
-        if (score == 8) {
-            alert("YOU WIN, CONGRATULATIONS!");
-            document.location.reload();
-            clearInterval(interval);
+    }
+}
+
+    function drawScore() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText("Score: " + score, 8, 20);
+    }
+
+    function drawLevel() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText("Level: " + level, 120, 20);
+    }
+
+    function mouseDownHandler() { //makes ball go up when mouseclick
+        dy = -1; //goes up until hits barrier, then goes down
+        let barrier = y - 30;
+        if (y = barrier) {
+            dy = 1;
         }
     }
-}
 
+    document.addEventListener("mousedown", mouseDownHandler, false);
 
-function drawScore() {
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "#0095DD";
-    ctx.fillText("Score: " + score, 8, 20);
-}
-
-function mouseDownHandler() { //makes ball go up when mouseclick
-    dy = -1; //goes up until hits barrier, then goes down
-    let barrier = y - 30;
-    if (y = barrier) {
-        dy = 1;
-    }
-}
-
-document.addEventListener("mousedown", mouseDownHandler, false);
-
-let interval = setInterval(draw, 10);
+    let interval = setInterval(draw, 10);
